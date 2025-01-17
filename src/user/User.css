@@ -1,0 +1,154 @@
+/* User.css */
+
+/* General container styling */
+.user-containter {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-containter:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* User Details Section */
+.user-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.user-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937; /* Gray-900 */
+}
+
+.user-joined {
+  font-size: 0.875rem;
+  color: #6b7280; /* Gray-500 */
+}
+
+/* Avatar styling */
+/* Avatar styling */
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #6366f1; /* Indigo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6; /* Gray-100 as fallback background */
+  color: #6b7280; /* Gray-500 for alt text */
+  font-size: 0.875rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Stat cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.stat-card.indigo {
+  background-color: #eef2ff; /* Indigo-50 */
+  color: #4f46e5; /* Indigo-600 */
+}
+
+.stat-card.purple {
+  background-color: #f5f3ff; /* Purple-50 */
+  color: #7c3aed; /* Purple-600 */
+}
+
+.stat-card.green {
+  background-color: #ecfdf5; /* Green-50 */
+  color: #10b981; /* Green-600 */
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #6b7280; /* Gray-600 */
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+/* Icon-specific styling */
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.icon.indigo {
+  color: #4f46e5; /* Indigo-600 */
+}
+
+.icon.purple {
+  color: #7c3aed; /* Purple-600 */
+}
+
+.icon.green {
+  color: #10b981; /* Green-600 */
+}
+
+.star-icon {
+  width: 20px;
+  height: 20px;
+  color: #facc15; /* Yellow-500 */
+  margin-left: 8px;
+}
+
+/* Trophy styling for ranks */
+.trophy {
+  width: 32px;
+  height: 32px;
+}
+
+.trophy.rank-1 {
+  color: #facc15; /* Yellow-500 */
+}
+
+.trophy.rank-2 {
+  color: #d1d5db; /* Gray-400 */
+}
+
+.trophy.rank-3 {
+  color: #f59e0b; /* Amber-600 */
+}
+
+/* Update Goals button */
+.update-button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  background-color: #f3f4f6; /* Gray-100 */
+  color: #374151; /* Gray-700 */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.update-button:hover {
+  background-color: #e5e7eb; /* Gray-200 */
+}
