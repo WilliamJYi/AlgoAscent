@@ -51,6 +51,11 @@
   text-align: center;
 }
 
+.user-avatar:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
 /* Stat cards */
 .stat-grid {
   display: grid;
@@ -88,7 +93,7 @@
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-top: 8px;
 }

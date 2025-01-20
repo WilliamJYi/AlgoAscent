@@ -14,6 +14,7 @@ import User from "../user/User";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
+  const [dailyData, setDailyData] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     date_joined: new Date().toISOString().slice(0, 10),
@@ -35,6 +36,12 @@ const Home = () => {
   // }, []);
 
   useEffect(() => {
+    if (users.length > 0) {
+      generateDailyData();
+    }
+  }, [users]);
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -49,6 +56,31 @@ const Home = () => {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
+  };
+
+  // Clean up code here
+  const generateDailyData = () => {
+    const last7Days = Array.from({ length: 7 }, (_, i) =>
+      subDays(new Date(), i)
+    ).reverse();
+
+    const formattedDailyData = last7Days.map((date) => {
+      const formattedDate = format(date, "MMM dd");
+      const dailyApplications = { date: formattedDate };
+
+      users.forEach((user) => {
+        const count = user.applications.filter(
+          (app) =>
+            new Date(app.date_added).toLocaleDateString() ===
+            date.toLocaleDateString()
+        ).length;
+        dailyApplications[user.name] = count;
+      });
+
+      return dailyApplications;
+    });
+
+    setDailyData(formattedDailyData);
   };
 
   const toggleForm = () => {
@@ -85,21 +117,21 @@ const Home = () => {
   const displayUsers = () => {
     if (users.length > 0) {
       return users.map((user, index) => {
-        return <User key={index} user={user} />;
+        return <User key={index} user={user} onDelete={fetchUsers} />;
       });
     }
   };
 
   // Mock daily data with individual user data
-  const dailyData = [
-    { date: "Nov 15", Alice: 5, Bob: 7, Kyle: 4 },
-    { date: "Nov 16", Alice: 8, Bob: 6, Kyle: 5 },
-    { date: "Nov 17", Alice: 7, Bob: 5, Kyle: 6 },
-    { date: "Nov 18", Alice: 6, Bob: 8, Kyle: 7 },
-    { date: "Nov 19", Alice: 5, Bob: 9, Kyle: 8 },
-    { date: "Nov 20", Alice: 10, Bob: 7, Kyle: 6 },
-    { date: "Nov 21", Alice: 9, Bob: 6, Kyle: 5 },
-  ];
+  // const dailyData = [
+  //   { date: "Nov 15", Alice: 5, Bob: 7, Kyle: 4 },
+  //   { date: "Nov 16", Alice: 8, Bob: 6, Kyle: 5 },
+  //   { date: "Nov 17", Alice: 7, Bob: 5, Kyle: 6 },
+  //   { date: "Nov 18", Alice: 6, Bob: 8, Kyle: 7 },
+  //   { date: "Nov 19", Alice: 5, Bob: 9, Kyle: 8 },
+  //   { date: "Nov 20", Alice: 10, Bob: 7, Kyle: 6 },
+  //   { date: "Nov 21", Alice: 9, Bob: 6, Kyle: 5 },
+  // ];
 
   console.log(dailyData); // Debugging: Ensure dailyData is populated correctly
 

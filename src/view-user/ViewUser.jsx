@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import {
+  filterApplicationsByDate,
+  filterApplicationsByCurrentWeek,
+} from "../dateUtils";
 import "./ViewUser.css";
 
 const ViewUser = () => {
@@ -98,6 +102,82 @@ const ViewUser = () => {
     }
   };
 
+  const displayApplications = (applications) => {
+    if (!applications || applications.length === 0) {
+      return <p>No jobs added yet.</p>;
+    }
+
+    return (
+      <div className="job-list">
+        <table className="job-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Position</th>
+              <th>Job Posting Link</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {applications.map((job, index) => (
+              <tr key={index}>
+                <td>{job.company}</td>
+                <td>{job.position}</td>
+                <td>
+                  <a
+                    href={job.jobLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Link
+                  </a>
+                </td>
+                <td>{new Date(job.date_added).toLocaleDateString()}</td>
+                <td>
+                  <button
+                    onClick={() => handleDelete(job._id)}
+                    className="delete-btn"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const displayToday = () => {
+    // if (!userData.applications) {
+    //   return <p>No jobs added yet.</p>;
+    // }
+    const today = new Date();
+    const dataToday = filterApplicationsByDate(userData.applications, today);
+    console.log(dataToday);
+    return displayApplications(dataToday);
+  };
+
+  const displayThisWeek = () => {
+    // if (!userData.applications) {
+    //   return <p>No jobs added yet.</p>;
+    // }
+
+    const dataThisWeek = filterApplicationsByCurrentWeek(userData.applications);
+
+    return displayApplications(dataThisWeek);
+  };
+
+  const displayAll = () => {
+    return !userData.applications ? (
+      <p>No jobs added yet.</p>
+    ) : (
+      displayApplications(userData.applications)
+    );
+  };
+
   if (!userData) {
     return <p>Loading user data...</p>; // Show loading message while data is fetched
   }
@@ -105,55 +185,19 @@ const ViewUser = () => {
   return (
     <div>
       <h1>{userData.name}</h1>
-      <h3>Today's applications:</h3>
-      <div className="job-list">
-        <h2>Job Applications</h2>
-        {userData.applications.length === 0 ? (
-          <p>No jobs added yet.</p>
-        ) : (
-          <table className="job-table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Position</th>
-                <th>Job Posting Link</th>
-                <th>Date Added</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {userData.applications.map((job, index) => (
-                <tr key={index}>
-                  <td>{job.company}</td>
-                  <td>{job.position}</td>
-                  <td>
-                    <a
-                      href={job.jobLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Link
-                    </a>
-                  </td>
-                  <td>{new Date(job.date_added).toLocaleDateString()}</td>
-                  <td>
-                    <button
-                      onClick={() => handleDelete(job._id)}
-                      className="delete-btn"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div>
+        <h3>Today's applications:</h3>
+        <div>{displayToday()}</div>
+        <button onClick={togglePopup} className="open-popup-btn">
+          Add Application
+        </button>
       </div>
-      <button onClick={togglePopup} className="open-popup-btn">
-        Add Application
-      </button>
-
+      <div>
+        <h3>This week's applications:</h3>
+        <div>{displayThisWeek()}</div>
+      </div>
+      <h3>All applications:</h3>
+      <div>{displayAll()}</div>
       {isOpen && (
         <div className="popup-overlay">
           <div className="popup-form">
