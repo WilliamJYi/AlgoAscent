@@ -11,7 +11,7 @@ const UpdateUser = () => {
     // Fetch user data by ID when component mounts
     const fetchUser = async () => {
       try {
-        const response = await fetch(`/users/${id}`);
+        const response = await fetch(`/api/users/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch user");
         }
@@ -34,7 +34,7 @@ const UpdateUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/users/${id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: "PUT", // Use PUT or PATCH for updating user
         headers: {
           "Content-Type": "application/json",

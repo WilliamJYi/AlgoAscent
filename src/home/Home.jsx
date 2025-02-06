@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   LineChart,
   Line,
@@ -10,7 +9,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, subDays } from "date-fns";
+
 import User from "../user/User";
+import "./Home.css";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -25,8 +26,10 @@ const Home = () => {
     total_apps: 0,
   }); // have a template for this
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  // const [weeklyUserApplications, setWeeklyUserApplications] =
 
   // useEffect(() => {
   //   fetch("/api/users") // This will be proxied to 'http://localhost:5000/users'
@@ -34,6 +37,23 @@ const Home = () => {
   //     .then((data) => setUsers(data));
   //   console.log("hello", user);
   // }, []);
+
+  useEffect(() => {
+    getAccess();
+  }, []);
+
+  const getAccess = async () => {
+    try {
+      const response = await fetch("/api/auth/free-endpoint");
+      if (!response.ok) {
+        throw new Error("Cannot access page");
+      }
+      const data = await response.json();
+      setMessage(data.message);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   useEffect(() => {
     if (users.length > 0) {
@@ -47,7 +67,7 @@ const Home = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/users");
+      const response = await fetch("/api/users");
       if (!response.ok) {
         throw new Error("Failed to fetch users");
       }
@@ -95,7 +115,7 @@ const Home = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/users", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,10 +137,14 @@ const Home = () => {
   const displayUsers = () => {
     if (users.length > 0) {
       return users.map((user, index) => {
-        return <User key={index} user={user} onDelete={fetchUsers} />;
+        return <User key={index} user={user} />;
       });
     }
   };
+
+  // const updateWeeklyRankings = () => {
+
+  // }
 
   // Mock daily data with individual user data
   // const dailyData = [
@@ -135,14 +159,13 @@ const Home = () => {
 
   console.log(dailyData); // Debugging: Ensure dailyData is populated correctly
 
+  if (users.length === 0) {
+    return <p>Loading...</p>; // Show loading message while data is fetched
+  }
+
   return (
-    <div>
-      <h1>Job Application Leaderboard</h1>
-      <div>
-        <button onClick={toggleForm} className="open-popup-btn">
-          Join Board
-        </button>
-      </div>
+    <div className="main-container">
+      <h3 className="text-center text-danger">{message}</h3>
       {isFormOpen && (
         <div className="popup-overlay">
           <div className="popup-form">
@@ -203,7 +226,7 @@ const Home = () => {
                 key={index}
                 type="monotone"
                 dataKey={user.name} // Matches user name in dailyData keys
-                stroke={`hsl(${index * 120}, 70%, 50%)`} // Generate unique colors
+                stroke={`hsl(${index * 60}, 70%, 50%)`} // Generate unique colors
               />
             ))}
           </LineChart>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   filterApplicationsByDate,
   filterApplicationsByCurrentWeek,
@@ -15,6 +15,7 @@ const ViewUser = () => {
     link: "",
   });
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch user data by ID when component mounts
@@ -22,7 +23,7 @@ const ViewUser = () => {
   }, [id]);
 
   const fetchUser = () => {
-    fetch(`/users/${id}`)
+    fetch(`/api/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch user");
@@ -59,7 +60,7 @@ const ViewUser = () => {
     // Reset form and close popup
     setFormData({ company: "", position: "", jobLink: "" });
     try {
-      const response = await fetch(`/users/${id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -81,10 +82,10 @@ const ViewUser = () => {
     togglePopup();
   };
 
-  const handleDelete = async (applicationId) => {
+  const handleDeleteApplication = async (applicationId) => {
     try {
       const response = await fetch(
-        `/users/${id}/applications/${applicationId}`,
+        `/api/users/${id}/applications/${applicationId}`,
         {
           method: "DELETE",
         }
@@ -99,6 +100,22 @@ const ViewUser = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+
+  const handleDeleteUser = async (e) => {
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        console.error("Failed to delete user");
+        return;
+      }
+      console.log("User successfully deleted");
+      navigate("/");
+    } catch (error) {
+      console.error("Error deleting user", error);
     }
   };
 
@@ -136,7 +153,7 @@ const ViewUser = () => {
                 <td>{new Date(job.date_added).toLocaleDateString()}</td>
                 <td>
                   <button
-                    onClick={() => handleDelete(job._id)}
+                    onClick={() => handleDeleteApplication(job._id)}
                     className="delete-btn"
                   >
                     Delete
@@ -198,6 +215,11 @@ const ViewUser = () => {
       </div>
       <h3>All applications:</h3>
       <div>{displayAll()}</div>
+      <div>
+        <button onClick={handleDeleteUser} className="delete-user-btn">
+          Delete User
+        </button>
+      </div>
       {isOpen && (
         <div className="popup-overlay">
           <div className="popup-form">

@@ -3,26 +3,11 @@ import { useNavigate } from "react-router-dom";
 import {
   filterApplicationsByDate,
   filterApplicationsByCurrentWeek,
-} from "../dateUtils";
+} from "../utils/dateUtils";
 import "./User.css";
 
-const User = ({ user, onDelete }) => {
+const User = ({ user }) => {
   const navigate = useNavigate();
-
-  const handleDelete = async (e) => {
-    try {
-      const response = await fetch(`users/${user._id}`, { method: "DELETE" });
-
-      if (!response.ok) {
-        console.error("Failed to delete user");
-        return;
-      }
-      console.log("User deleted successfully");
-      onDelete(); // Call the onDelete callback to refresh the user list
-    } catch (error) {
-      console.error("Error deleting user", error);
-    }
-  };
 
   const handleView = () => {
     navigate(`/view-user/${user._id}`);
@@ -41,7 +26,7 @@ const User = ({ user, onDelete }) => {
   };
 
   return (
-    <div className="user-containter">
+    <div className="user-containter" onClick={handleView}>
       <div className="user-details">
         <img
           src={user.avatar}
@@ -49,7 +34,9 @@ const User = ({ user, onDelete }) => {
           className="user-avatar"
         />
         <div>
-          <h1 className="user-name">{user.name}</h1>
+          <h1 className="user-name">
+            {user.firstname} {user.lastname}
+          </h1>
           <p className="user-joined">
             Joined: {new Date(user.date_joined).toLocaleDateString()}
           </p>
@@ -89,13 +76,6 @@ const User = ({ user, onDelete }) => {
           <p className="stat-value">{user.applications.length}</p>
         </div>
       </div>
-      <button className="update-button" onClick={handleView}>
-        View User
-      </button>
-
-      <button className="update-button" onClick={handleDelete}>
-        Delete User
-      </button>
     </div>
   );
 };
