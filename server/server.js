@@ -1,20 +1,20 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-require("dotenv").config();
+const authRoutes = require("./routes/authRoutes"); // Auth Routes
+const userRoutes = require("./routes/userRoutes"); // User Routes
+const dbConnect = require("./dbConnect"); // Database connection
 
 const app = express();
 
 // Middleware
 app.use(cors());
-
 app.use(bodyParser.json());
 app.use(express.json());
 
-// User Routes
-const userRoutes = require("./routes/userRoutes");
-app.use("/users", userRoutes); // Mount the route at /users
+// Mount routes
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 app.use((req, res, next) => {
   console.log(`Incoming Request: ${req.method} ${req.url}`);
@@ -24,11 +24,21 @@ app.use((req, res, next) => {
 });
 
 // Connect to MongoDB
-const DB_URI = process.env.DB_URI || "mongodb://localhost:27017/leaderboard";
-mongoose
-  .connect(DB_URI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+dbConnect();
+
+// Curb Cores Error by adding a header here
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  next();
+});
 
 // Sample Route
 app.get("/", (req, res) => {

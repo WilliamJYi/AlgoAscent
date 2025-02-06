@@ -5,8 +5,9 @@
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 12px; /* Reduced padding */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 300px; /* Full width within the grid column */
 }
 
 .user-containter:hover {
@@ -34,7 +35,6 @@
 }
 
 /* Avatar styling */
-/* Avatar styling */
 .user-avatar {
   width: 64px;
   height: 64px;
@@ -49,6 +49,11 @@
   font-size: 0.875rem;
   font-weight: bold;
   text-align: center;
+}
+
+.user-avatar:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Stat cards */
@@ -88,7 +93,7 @@
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-top: 8px;
 }

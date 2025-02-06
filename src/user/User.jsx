@@ -1,17 +1,30 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  filterApplicationsByDate,
+  filterApplicationsByCurrentWeek,
+} from "../utils/dateUtils";
 import "./User.css";
 
 const User = ({ user }) => {
   const navigate = useNavigate();
 
-  const handleUpdate = () => {
-    navigate(`/update-user/${user._id}`);
-  };
-
   const handleView = () => {
     navigate(`/view-user/${user._id}`);
   };
+
+  // Calulate how many applications applied to today
+  const calculateApplicationsToday = () => {
+    const today = new Date();
+    const dataToday = filterApplicationsByDate(user.applications, today);
+    return dataToday.length;
+  };
+
+  const calculateApplicationsThisWeek = () => {
+    const dataThisWeek = filterApplicationsByCurrentWeek(user.applications);
+    return dataThisWeek.length;
+  };
+
   return (
     <div className="user-containter" onClick={handleView}>
       <div className="user-details">
@@ -21,8 +34,12 @@ const User = ({ user }) => {
           className="user-avatar"
         />
         <div>
-          <h1 className="user-name">{user.name}</h1>
-          <p className="user-joined">Joined: {user.date_joined}</p>
+          <h1 className="user-name">
+            {user.firstname} {user.lastname}
+          </h1>
+          <p className="user-joined">
+            Joined: {new Date(user.date_joined).toLocaleDateString()}
+          </p>
         </div>
       </div>
 
@@ -32,9 +49,12 @@ const User = ({ user }) => {
             <span className="icon indigo">🎯</span>
             <span>Today's Apps</span>
           </div>
-          <p className="stat-value">
-            {user.apps_today} / {user.daily_goal}
-          </p>
+          <div>
+            <p className="stat-value">
+              Applications today: {calculateApplicationsToday()}
+            </p>
+            <p className="stat-value">Daily goal: {user.daily_goal}</p>
+          </div>
         </div>
 
         <div className="stat-card purple">
@@ -43,8 +63,9 @@ const User = ({ user }) => {
             <span>Week's Apps</span>
           </div>
           <p className="stat-value">
-            {user.apps_this_week} / {user.weekly_goal}
+            Applications this week: {calculateApplicationsThisWeek()}
           </p>
+          <p className="stat-value">Weekly goal: {user.weekly_goal}</p>
         </div>
 
         <div className="stat-card green">
@@ -52,13 +73,9 @@ const User = ({ user }) => {
             <span className="icon green">📋</span>
             <span>Total Apps</span>
           </div>
-          <p className="stat-value">{user.total_apps}</p>
+          <p className="stat-value">{user.applications.length}</p>
         </div>
       </div>
-
-      <button className="update-button" onClick={handleUpdate}>
-        Update Applications
-      </button>
     </div>
   );
 };

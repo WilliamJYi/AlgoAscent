@@ -1,6 +1,7 @@
 const express = require("express");
+const User = require("../models/UserModel");
+
 const router = express.Router();
-const User = require("../models/User");
 
 // Get All Users
 router.get("/", async (req, res) => {
@@ -25,14 +26,21 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Add a New User
-router.post("/", async (req, res) => {
-  const user = new User(req.body);
+// Delete User
+router.delete("/:id", async (req, res) => {
   try {
-    const newUser = await user.save();
-    res.status(201).json(newUser);
+    const { id } = req.params;
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "User deleted successfully", user: deletedUser });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 });
 

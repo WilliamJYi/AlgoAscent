@@ -5,10 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/users": {
+      "/api": {
         target: "http://localhost:5000", // Backend server
-        changeOrigin: true, // Adjust the origin of the host header to the target URL
-        rewrite: (path) => path.replace(/^\/users/, "/users"), // Optional: Adjust path if needed
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""), // Rewrite /api/users → /users
       },
     },
   },

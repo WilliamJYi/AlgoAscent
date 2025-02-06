@@ -61,6 +61,20 @@
   background-color: #0056b3;
 }
 
+.delete-user-btn {
+  padding: 10px 20px;
+  background-color: #dc143c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.delete-user-btn:hover {
+  background-color: #8b0000;
+}
+
 .open-popup-btn {
   padding: 10px 20px;
   background-color: #28a745;
