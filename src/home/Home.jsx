@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 import {
   LineChart,
   Line,
@@ -14,6 +15,9 @@ import User from "../user/User";
 import "./Home.css";
 
 const Home = () => {
+  const cookies = new Cookies();
+  const token = cookies.get("TOKEN");
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [formData, setFormData] = useState({
@@ -44,14 +48,21 @@ const Home = () => {
 
   const getAccess = async () => {
     try {
-      const response = await fetch("/api/auth/free-endpoint");
+      const response = await fetch("/api/auth/auth-endpoint", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error("Cannot access page");
       }
       const data = await response.json();
+      console.log(data);
+      setLoggedInUserId(data.user._id);
       setMessage(data.message);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error accessing page:", error);
     }
   };
 
@@ -135,10 +146,14 @@ const Home = () => {
   };
 
   const displayUsers = () => {
+    if (message === "Authorized") {
+    }
     if (users.length > 0) {
-      return users.map((user, index) => {
-        return <User key={index} user={user} />;
-      });
+      return message !== "Authorized"
+        ? users.map((user, index) => <User key={index} user={user} />)
+        : users
+            .filter((user) => user._id != loggedInUserId)
+            .map((user, index) => <User key={index} user={user} />);
     }
   };
 
@@ -165,7 +180,6 @@ const Home = () => {
 
   return (
     <div className="main-container">
-      <h3 className="text-center text-danger">{message}</h3>
       {isFormOpen && (
         <div className="popup-overlay">
           <div className="popup-form">

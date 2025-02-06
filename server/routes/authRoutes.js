@@ -64,13 +64,15 @@ router.post("/login", async (request, response) => {
       "RANDOM-TOKEN",
       { expiresIn: "24h" }
     );
-    res.status(200).json({
+    response.status(200).json({
       message: "Login Successful",
       email: user.email,
       token,
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    response
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 });
 
@@ -80,8 +82,20 @@ router.get("/free-endpoint", (request, response) => {
 });
 
 // authentication endpoint
-router.get("/auth-endpoint", auth, (request, response) => {
-  response.json({ message: "You are authorized to access" });
+router.get("/auth-endpoint", auth, async (request, response) => {
+  try {
+    const user = await User.findById(request.user.userId).select("-password");
+
+    if (!user) {
+      return response.status(404).json({ message: "User not found" });
+    }
+
+    response.status(200).json({ message: "Authorized", user });
+  } catch (error) {
+    response
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
 });
 
 module.exports = router;

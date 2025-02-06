@@ -7,8 +7,8 @@ import ViewUser from "./view-user/ViewUser";
 import Login from "./login/Login";
 import CreateUser from "./create-user/CreateUser";
 import Navbar from "./navbar/Navbar";
-import ProtectedRoutes from "./ProtectedRoutes";
-import AuthComponent from "./AuthComponent";
+import ProtectedRoutes from "./protected-routes/ProtectedRoutes";
+import AuthComponent from "./user-dashboard/UserDashboard";
 import "./App.css";
 
 function App() {

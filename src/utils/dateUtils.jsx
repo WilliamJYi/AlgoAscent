@@ -18,16 +18,26 @@ export const getCurrentWeekRange = () => {
 };
 
 // Filter applications for a specific date
-export const filterApplicationsByDate = (applications, date) => {
-  const targetDate = new Date(date).toLocaleDateString();
-  return applications.filter(
-    (app) => new Date(app.date_added).toLocaleDateString() === targetDate
-  );
+export const filterApplicationsByDate = (applications = [], date) => {
+  if (!applications || !Array.isArray(applications)) {
+    console.error("Applications is undefined or not an array:", applications);
+    return []; // Return an empty array to prevent errors
+  }
+
+  return applications.filter((app) => {
+    if (!app.date_added) return false; // Ensure date exists
+    const appDate = new Date(app.date_added).toLocaleDateString();
+    return appDate === date.toLocaleDateString();
+  });
 };
 
 // Filter applications within the current week
-export const filterApplicationsByCurrentWeek = (applications) => {
+export const filterApplicationsByCurrentWeek = (applications = []) => {
   const { startOfWeek, endOfWeek } = getCurrentWeekRange();
+  if (!applications || !Array.isArray(applications)) {
+    console.error("Applications is undefined or not an array:", applications);
+    return [];
+  }
   return applications.filter((app) => {
     const applicationDate = new Date(app.date_added);
     return applicationDate >= startOfWeek && applicationDate <= endOfWeek;

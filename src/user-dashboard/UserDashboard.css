@@ -1,22 +1,4 @@
-.main-container {
-  margin-top: 20px;
-}
-
-.users-container {
-  display: flex;
-  flex-wrap: wrap; /* Allows items to wrap to the next row */
-  justify-content: space-between; /* Distribute items with even spacing */
-  row-gap: 20px; /* Space between rows */
-  column-gap: 20px; /* Space between columns */
-  padding: 20px; /* Optional padding for container */
-}
-
-.chart-container {
-  width: 100%;
-  height: 256px; /* equivalent to h-64 in Tailwind */
-}
-
-/* Form styles */
+/* General styles */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -36,6 +18,7 @@
   border-radius: 8px;
   width: 300px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
   position: relative;
 }
 
@@ -45,7 +28,7 @@
   text-align: center;
 }
 
-.popup-form {
+.form-group {
   margin-bottom: 15px;
 }
 
@@ -53,6 +36,7 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  text-align: left;
 }
 
 .form-group input {
@@ -75,6 +59,20 @@
 
 .submit-btn:hover {
   background-color: #0056b3;
+}
+
+.delete-user-btn {
+  padding: 10px 20px;
+  background-color: #dc143c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.delete-user-btn:hover {
+  background-color: #8b0000;
 }
 
 .open-popup-btn {
@@ -100,4 +98,43 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: #000;
+}
+
+/* Popup styles remain the same */
+
+/* Table styles */
+.job-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.job-table th,
+.job-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.job-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.job-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.job-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.job-table a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.job-table a:hover {
+  text-decoration: underline;
 }
