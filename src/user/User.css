@@ -5,9 +5,12 @@
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 12px; /* Reduced padding */
+  padding: 16px; /* Reduced padding */
+  gap: 16px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 300px; /* Full width within the grid column */
+  width: max-content;
+  margin: 20px;
+  display: flex;
 }
 
 .user-containter:hover {
@@ -20,7 +23,11 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 16px;
+}
+
+.user-ranking {
+  margin: auto 25px;
+  font-size: x-large;
 }
 
 .user-name {
@@ -58,10 +65,9 @@
 
 /* Stat cards */
 .stat-grid {
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 20px;
 }
 
 .stat-card {

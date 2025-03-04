@@ -17,19 +17,29 @@ export const getCurrentWeekRange = () => {
   return { startOfWeek, endOfWeek };
 };
 
-// Filter applications for a specific date
-export const filterApplicationsByDate = (applications, date) => {
-  const targetDate = new Date(date).toLocaleDateString();
-  return applications.filter(
-    (app) => new Date(app.date_added).toLocaleDateString() === targetDate
-  );
+// Filter problems for a specific date
+export const filterProblemsByDate = (problems = [], date) => {
+  if (!problems || !Array.isArray(problems)) {
+    console.error("Problems is undefined or not an array:", problems);
+    return []; // Return an empty array to prevent errors
+  }
+
+  return problems.filter((app) => {
+    if (!app.date_added) return false; // Ensure date exists
+    const appDate = new Date(app.date_added).toLocaleDateString();
+    return appDate === date.toLocaleDateString();
+  });
 };
 
-// Filter applications within the current week
-export const filterApplicationsByCurrentWeek = (applications) => {
+// Filter problems within the current week
+export const filterProblemsByCurrentWeek = (problems = []) => {
   const { startOfWeek, endOfWeek } = getCurrentWeekRange();
-  return applications.filter((app) => {
-    const applicationDate = new Date(app.date_added);
-    return applicationDate >= startOfWeek && applicationDate <= endOfWeek;
+  if (!problems || !Array.isArray(problems)) {
+    console.error("Problems is undefined or not an array:", problems);
+    return [];
+  }
+  return problems.filter((app) => {
+    const problemDate = new Date(app.date_added);
+    return problemDate >= startOfWeek && problemDate <= endOfWeek;
   });
 };

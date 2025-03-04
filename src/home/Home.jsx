@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 import {
   LineChart,
   Line,
@@ -14,6 +15,9 @@ import User from "../user/User";
 import "./Home.css";
 
 const Home = () => {
+  const cookies = new Cookies();
+  const token = cookies.get("TOKEN");
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [formData, setFormData] = useState({
@@ -29,7 +33,7 @@ const Home = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
-  // const [weeklyUserApplications, setWeeklyUserApplications] =
+  // const [weeklyUserProblems, setWeeklyUserProblems] =
 
   // useEffect(() => {
   //   fetch("/api/users") // This will be proxied to 'http://localhost:5000/users'
@@ -44,14 +48,21 @@ const Home = () => {
 
   const getAccess = async () => {
     try {
-      const response = await fetch("/api/auth/free-endpoint");
+      const response = await fetch("/api/auth/auth-endpoint", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!response.ok) {
         throw new Error("Cannot access page");
       }
       const data = await response.json();
+      console.log(data);
+      setLoggedInUserId(data.user._id);
       setMessage(data.message);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error accessing page:", error);
     }
   };
 
@@ -86,18 +97,18 @@ const Home = () => {
 
     const formattedDailyData = last7Days.map((date) => {
       const formattedDate = format(date, "MMM dd");
-      const dailyApplications = { date: formattedDate };
+      const dailyProblems = { date: formattedDate };
 
       users.forEach((user) => {
-        const count = user.applications.filter(
-          (app) =>
-            new Date(app.date_added).toLocaleDateString() ===
+        const count = user.problems.filter(
+          (problem) =>
+            new Date(problem.date_added).toLocaleDateString() ===
             date.toLocaleDateString()
         ).length;
-        dailyApplications[user.name] = count;
+        dailyProblems[user.firstname] = count;
       });
 
-      return dailyApplications;
+      return dailyProblems;
     });
 
     setDailyData(formattedDailyData);
@@ -135,10 +146,28 @@ const Home = () => {
   };
 
   const displayUsers = () => {
+    if (message === "Authorized") {
+    }
     if (users.length > 0) {
-      return users.map((user, index) => {
-        return <User key={index} user={user} />;
-      });
+      return message !== "Authorized"
+        ? users
+            // Sort users based on how many total problems added
+            .sort(
+              (user_a, user_b) =>
+                user_b.problems.length - user_a.problems.length
+            )
+            .map((user, index) => (
+              <User key={index} user={user} rank={index + 1} />
+            ))
+        : users
+            .filter((user) => user._id != loggedInUserId)
+            .sort(
+              (user_a, user_b) =>
+                user_b.problems.length - user_a.problems.length
+            )
+            .map((user, index) => (
+              <User key={index} user={user} rank={index + 1} />
+            ));
     }
   };
 
@@ -165,7 +194,6 @@ const Home = () => {
 
   return (
     <div className="main-container">
-      <h3 className="text-center text-danger">{message}</h3>
       {isFormOpen && (
         <div className="popup-overlay">
           <div className="popup-form">
@@ -213,7 +241,7 @@ const Home = () => {
         </div>
       )}
 
-      <div>Application Trend</div>
+      <div>Problem Trend</div>
       <div style={{ width: "100%", height: "300px" }}>
         <ResponsiveContainer>
           <LineChart data={dailyData}>
@@ -225,14 +253,17 @@ const Home = () => {
               <Line
                 key={index}
                 type="monotone"
-                dataKey={user.name} // Matches user name in dailyData keys
+                dataKey={user.firstname} // Matches user name in dailyData keys
                 stroke={`hsl(${index * 60}, 70%, 50%)`} // Generate unique colors
               />
             ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="users-container">{displayUsers()}</div>
+      <div className="users-container">
+        <h1>User Rankings</h1>
+        <div>{displayUsers()}</div>
+      </div>
     </div>
   );
 };
