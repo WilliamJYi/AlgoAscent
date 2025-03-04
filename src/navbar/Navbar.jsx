@@ -41,7 +41,7 @@ const Navbar = () => {
 
   return (
     <div className="navbar">
-      <h1 className="navbar-title">Job Application Leaderboard</h1>
+      <h1 className="navbar-title">AlgoAscent</h1>
       <div className="nav-links">
         <Link to="/">Home</Link>
         {!token && <Link to="/create-user">Sign Up</Link>}

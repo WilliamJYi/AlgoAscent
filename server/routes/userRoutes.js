@@ -44,11 +44,11 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// Add an Application to a User
+// Add an Problem to a User
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params; // Get user ID from the request parameters
-    const application = req.body; // Get application details from the request body
+    const problem = req.body; // Get problem details from the request body
 
     // Find the user by ID
     const user = await User.findById(id);
@@ -57,8 +57,8 @@ router.put("/:id", async (req, res) => {
       return res.status(404).json({ message: "User not found" }); // Handle user not found
     }
 
-    // Add the application to the user's applications array
-    user.applications.push(application);
+    // Add the problem to the user's problems array
+    user.problems.push(problem);
 
     // Save the updated user record
     const updatedUser = await user.save();
@@ -69,10 +69,35 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Delete an Application
-router.delete("/:userId/applications/:applicationId", async (req, res) => {
+// Update user avatar
+router.put("/:id/avatar", async (req, res) => {
   try {
-    const { userId, applicationId } = req.params;
+    const { id } = req.params;
+    const { avatar } = req.body;
+
+    if (!avatar) {
+      return res.status(404).json({ message: "No image provided" });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.avatar = avatar;
+    const updatedUser = await user.save();
+
+    res.status(200).json(updatedUser); // Return the updated user data
+  } catch (err) {
+    res.status(500).json({ message: err.message }); // Handle server errors
+  }
+});
+
+// Delete an Problem
+router.delete("/:userId/problems/:problemId", async (req, res) => {
+  try {
+    const { userId, problemId } = req.params;
 
     // Find the user by ID
     const user = await User.findById(userId);
@@ -81,9 +106,9 @@ router.delete("/:userId/applications/:applicationId", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Filter out the application by ID
-    user.applications = user.applications.filter(
-      (app) => app._id.toString() !== applicationId
+    // Filter out the problem by ID
+    user.problems = user.problems.filter(
+      (app) => app._id.toString() !== problemId
     );
 
     // Save the updated user record

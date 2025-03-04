@@ -33,7 +33,7 @@ const Home = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
-  // const [weeklyUserApplications, setWeeklyUserApplications] =
+  // const [weeklyUserProblems, setWeeklyUserProblems] =
 
   // useEffect(() => {
   //   fetch("/api/users") // This will be proxied to 'http://localhost:5000/users'
@@ -97,18 +97,18 @@ const Home = () => {
 
     const formattedDailyData = last7Days.map((date) => {
       const formattedDate = format(date, "MMM dd");
-      const dailyApplications = { date: formattedDate };
+      const dailyProblems = { date: formattedDate };
 
       users.forEach((user) => {
-        const count = user.applications.filter(
-          (app) =>
-            new Date(app.date_added).toLocaleDateString() ===
+        const count = user.problems.filter(
+          (problem) =>
+            new Date(problem.date_added).toLocaleDateString() ===
             date.toLocaleDateString()
         ).length;
-        dailyApplications[user.name] = count;
+        dailyProblems[user.firstname] = count;
       });
 
-      return dailyApplications;
+      return dailyProblems;
     });
 
     setDailyData(formattedDailyData);
@@ -150,10 +150,24 @@ const Home = () => {
     }
     if (users.length > 0) {
       return message !== "Authorized"
-        ? users.map((user, index) => <User key={index} user={user} />)
+        ? users
+            // Sort users based on how many total problems added
+            .sort(
+              (user_a, user_b) =>
+                user_b.problems.length - user_a.problems.length
+            )
+            .map((user, index) => (
+              <User key={index} user={user} rank={index + 1} />
+            ))
         : users
             .filter((user) => user._id != loggedInUserId)
-            .map((user, index) => <User key={index} user={user} />);
+            .sort(
+              (user_a, user_b) =>
+                user_b.problems.length - user_a.problems.length
+            )
+            .map((user, index) => (
+              <User key={index} user={user} rank={index + 1} />
+            ));
     }
   };
 
@@ -227,7 +241,7 @@ const Home = () => {
         </div>
       )}
 
-      <div>Application Trend</div>
+      <div>Problem Trend</div>
       <div style={{ width: "100%", height: "300px" }}>
         <ResponsiveContainer>
           <LineChart data={dailyData}>
@@ -239,14 +253,17 @@ const Home = () => {
               <Line
                 key={index}
                 type="monotone"
-                dataKey={user.name} // Matches user name in dailyData keys
+                dataKey={user.firstname} // Matches user name in dailyData keys
                 stroke={`hsl(${index * 60}, 70%, 50%)`} // Generate unique colors
               />
             ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="users-container">{displayUsers()}</div>
+      <div className="users-container">
+        <h1>User Rankings</h1>
+        <div>{displayUsers()}</div>
+      </div>
     </div>
   );
 };

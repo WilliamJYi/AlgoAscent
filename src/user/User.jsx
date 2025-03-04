@@ -1,32 +1,33 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  filterApplicationsByDate,
-  filterApplicationsByCurrentWeek,
+  filterProblemsByDate,
+  filterProblemsByCurrentWeek,
 } from "../utils/dateUtils";
 import "./User.css";
 
-const User = ({ user }) => {
+const User = ({ user, rank }) => {
   const navigate = useNavigate();
 
   const handleView = () => {
     navigate(`/view-user/${user._id}`);
   };
 
-  // Calulate how many applications applied to today
-  const calculateApplicationsToday = () => {
+  // Calulate how many problems completed today
+  const calculateProblemsToday = () => {
     const today = new Date();
-    const dataToday = filterApplicationsByDate(user.applications, today);
+    const dataToday = filterProblemsByDate(user.problems, today);
     return dataToday.length;
   };
 
-  const calculateApplicationsThisWeek = () => {
-    const dataThisWeek = filterApplicationsByCurrentWeek(user.applications);
+  const calculateProblemsThisWeek = () => {
+    const dataThisWeek = filterProblemsByCurrentWeek(user.problems);
     return dataThisWeek.length;
   };
 
   return (
     <div className="user-containter" onClick={handleView}>
+      <p className="user-ranking">{rank}</p>
       <div className="user-details">
         <img
           src={user.avatar}
@@ -47,33 +48,25 @@ const User = ({ user }) => {
         <div className="stat-card indigo">
           <div className="stat-header">
             <span className="icon indigo">🎯</span>
-            <span>Today's Apps</span>
+            <span>Today</span>
           </div>
-          <div>
-            <p className="stat-value">
-              Applications today: {calculateApplicationsToday()}
-            </p>
-            <p className="stat-value">Daily goal: {user.daily_goal}</p>
-          </div>
+          <p className="stat-value">{calculateProblemsToday()}</p>
         </div>
 
         <div className="stat-card purple">
           <div className="stat-header">
             <span className="icon purple">📈</span>
-            <span>Week's Apps</span>
+            <span>This Week</span>
           </div>
-          <p className="stat-value">
-            Applications this week: {calculateApplicationsThisWeek()}
-          </p>
-          <p className="stat-value">Weekly goal: {user.weekly_goal}</p>
+          <p className="stat-value">{calculateProblemsThisWeek()}</p>
         </div>
 
         <div className="stat-card green">
           <div className="stat-header">
             <span className="icon green">📋</span>
-            <span>Total Apps</span>
+            <span>Total</span>
           </div>
-          <p className="stat-value">{user.applications.length}</p>
+          <p className="stat-value">{user.problems.length}</p>
         </div>
       </div>
     </div>

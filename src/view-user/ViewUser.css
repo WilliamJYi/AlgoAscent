@@ -103,38 +103,38 @@
 /* Popup styles remain the same */
 
 /* Table styles */
-.job-table {
+.problem-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-.job-table th,
-.job-table td {
+.problem-table th,
+.problem-table td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: left;
 }
 
-.job-table th {
+.problem-table th {
   background-color: #f4f4f4;
   font-weight: bold;
 }
 
-.job-table tr:nth-child(even) {
+.problem-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.job-table tr:hover {
+.problem-table tr:hover {
   background-color: #f1f1f1;
 }
 
-.job-table a {
+.problem-table a {
   color: #007bff;
   text-decoration: none;
 }
 
-.job-table a:hover {
+.problem-table a:hover {
   text-decoration: underline;
 }

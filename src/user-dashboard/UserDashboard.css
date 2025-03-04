@@ -1,4 +1,95 @@
 /* General styles */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heading-container {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  padding: 0 20px;
+  width: 1000px;
+}
+
+.heading-container .user-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.problems-container {
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  padding: 0 20px;
+  width: 1000px;
+}
+
+/* Table styles */
+
+.problem-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.problem-table th,
+.problem-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.problem-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.problem-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.problem-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.problem-table a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.problem-table a:hover {
+  text-decoration: underline;
+}
+
+.delete-user-btn {
+  padding: 10px 20px;
+  background-color: #dc143c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.delete-user-btn:hover {
+  background-color: #8b0000;
+}
+
+/* Popup styles */
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -46,6 +137,29 @@
   border-radius: 4px;
 }
 
+.form-group select {
+  width: 100%; /* Change later */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.solved-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.solved-container label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-weight: normal;
+  font-size: smaller;
+}
+
 .submit-btn {
   width: 100%;
   padding: 10px;
@@ -59,20 +173,6 @@
 
 .submit-btn:hover {
   background-color: #0056b3;
-}
-
-.delete-user-btn {
-  padding: 10px 20px;
-  background-color: #dc143c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.delete-user-btn:hover {
-  background-color: #8b0000;
 }
 
 .open-popup-btn {
@@ -98,43 +198,4 @@
   font-size: 1.5rem;
   cursor: pointer;
   color: #000;
-}
-
-/* Popup styles remain the same */
-
-/* Table styles */
-.job-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.job-table th,
-.job-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-
-.job-table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
-}
-
-.job-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.job-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.job-table a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.job-table a:hover {
-  text-decoration: underline;
 }

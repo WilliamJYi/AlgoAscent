@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  filterApplicationsByDate,
-  filterApplicationsByCurrentWeek,
+  filterProblemsByDate,
+  filterProblemsByCurrentWeek,
 } from "../utils/dateUtils";
 import "./ViewUser.css";
 
@@ -32,37 +32,40 @@ const ViewUser = () => {
       });
   };
 
-  const displayApplications = (applications) => {
-    if (!applications || applications.length === 0) {
-      return <p>No jobs added yet.</p>;
+  const displayProblems = (problems) => {
+    if (!problems || problems.length === 0) {
+      return <p>No problems added yet.</p>;
     }
 
     return (
-      <div className="job-list">
-        <table className="job-table">
+      <div className="problem-list">
+        <table className="problem-table">
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Position</th>
-              <th>Job Posting Link</th>
+              <th>Problem</th>
+              <th>Pattern</th>
+              <th>Difficulty</th>
+              <th>Solved</th>
               <th>Date Added</th>
             </tr>
           </thead>
           <tbody>
-            {applications.map((job, index) => (
+            {problems.map((problem, index) => (
               <tr key={index}>
-                <td>{job.company}</td>
-                <td>{job.position}</td>
                 <td>
+                  {problem.name}{" "}
                   <a
-                    href={job.jobLink}
+                    href={problem.question_link}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    View Link
+                    🔗
                   </a>
                 </td>
-                <td>{new Date(job.date_added).toLocaleDateString()}</td>
+                <td>{problem.pattern}</td>
+                <td>{problem.difficulty}</td>
+                <td>{problem.completed}</td>
+                <td>{new Date(problem.date_added).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
@@ -72,30 +75,30 @@ const ViewUser = () => {
   };
 
   const displayToday = () => {
-    // if (!userData.applications) {
-    //   return <p>No jobs added yet.</p>;
+    // if (!userData.problems) {
+    //   return <p>No problems added yet.</p>;
     // }
     const today = new Date();
-    const dataToday = filterApplicationsByDate(userData.applications, today);
+    const dataToday = filterProblemsByDate(userData.problems, today);
     console.log(dataToday);
-    return displayApplications(dataToday);
+    return displayProblems(dataToday);
   };
 
   const displayThisWeek = () => {
-    // if (!userData.applications) {
-    //   return <p>No jobs added yet.</p>;
+    // if (!userData.problems) {
+    //   return <p>No problems added yet.</p>;
     // }
 
-    const dataThisWeek = filterApplicationsByCurrentWeek(userData.applications);
+    const dataThisWeek = filterProblemsByCurrentWeek(userData.problems);
 
-    return displayApplications(dataThisWeek);
+    return displayProblems(dataThisWeek);
   };
 
   const displayAll = () => {
-    return !userData.applications ? (
-      <p>No jobs added yet.</p>
+    return !userData.problems ? (
+      <p>No problems added yet.</p>
     ) : (
-      displayApplications(userData.applications)
+      displayProblems(userData.problems)
     );
   };
 
@@ -105,16 +108,16 @@ const ViewUser = () => {
 
   return (
     <div>
-      <h1>{userData.firstname}'s Applications</h1>
+      <h1>{userData.firstname}'s Problems</h1>
       <div>
-        <h3>Today's applications:</h3>
+        <h3>Today's problems:</h3>
         <div>{displayToday()}</div>
       </div>
       <div>
-        <h3>This week's applications:</h3>
+        <h3>This week's problems:</h3>
         <div>{displayThisWeek()}</div>
       </div>
-      <h3>All applications:</h3>
+      <h3>All problems:</h3>
       <div>{displayAll()}</div>
     </div>
   );
