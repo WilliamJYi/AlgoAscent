@@ -22,3 +22,5 @@ export const PATTERNS = [
 export const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 
 export const SOLVED = ["Yes", "No"];
+
+export const RANKINGS = ["first-place", "second-place", "third-place"];

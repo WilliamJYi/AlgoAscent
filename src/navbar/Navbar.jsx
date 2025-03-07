@@ -6,36 +6,46 @@ import "./Navbar.css";
 const Navbar = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(cookies.get("TOKEN") || null);
+  const [userData, setUserData] = useState();
 
   // Function to check authentication status
-  const checkAuthStatus = () => {
-    const userToken = cookies.get("TOKEN");
-    setToken(userToken || null);
+  const checkAuthStatus = async (userToken) => {
+    if (!userToken) return;
+
+    try {
+      const response = await fetch("/api/auth/auth-endpoint", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Cannot access page");
+      }
+      const data = await response.json();
+      setUserData(data.user);
+      setToken(userToken || null);
+    } catch (error) {
+      console.error("Error accessing page:", error);
+      setUserData(null);
+      setToken(null);
+      cookies.remove("TOKEN", { path: "/" });
+    }
   };
 
-  // Effect to check token at an interval (ensures updates on login/logout)
+  // Check authentication status if token exists
   useEffect(() => {
-    checkAuthStatus(); // Run on mount
-
-    const interval = setInterval(() => {
-      checkAuthStatus(); // Run periodically to detect cookie changes
-    }, 1000); // Check every second
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
-
-  // Redirect to home if user logs out
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
+    if (token) {
+      checkAuthStatus(token);
     }
   }, [token]);
 
   // Logout function
   const handleLogout = () => {
     cookies.remove("TOKEN", { path: "/" });
-    setToken(null); // Update state immediately
+    setToken(null);
+    setUserData(null);
     navigate("/");
   };
 
@@ -46,7 +56,9 @@ const Navbar = () => {
         <Link to="/">Home</Link>
         {!token && <Link to="/create-user">Sign Up</Link>}
         {!token && <Link to="/login">Login</Link>}
-        {token && <Link to="/auth">Dashboard</Link>}
+        {token && userData && (
+          <Link to="/auth">{userData.firstname + " " + userData.lastname}</Link>
+        )}
         {token && (
           <Link onClick={handleLogout} to="/auth">
             Log out

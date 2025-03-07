@@ -10,9 +10,13 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, subDays } from "date-fns";
-
-import User from "../user/User";
+import {
+  filterProblemsByDate,
+  filterProblemsByCurrentWeek,
+} from "../utils/dateUtils";
+import defaultAvatar from "../assets/default-avatar.jpg";
 import "./Home.css";
+import { RANKINGS } from "../utils/consts";
 
 const Home = () => {
   const cookies = new Cookies();
@@ -20,27 +24,8 @@ const Home = () => {
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [users, setUsers] = useState([]);
   const [dailyData, setDailyData] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    date_joined: new Date().toISOString().slice(0, 10),
-    apps_today: 0,
-    daily_goal: 15,
-    apps_this_week: 0,
-    weekly_goal: 110,
-    total_apps: 0,
-  }); // have a template for this
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
-  // const [weeklyUserProblems, setWeeklyUserProblems] =
-
-  // useEffect(() => {
-  //   fetch("/api/users") // This will be proxied to 'http://localhost:5000/users'
-  //     .then((response) => response.json())
-  //     .then((data) => setUsers(data));
-  //   console.log("hello", user);
-  // }, []);
 
   useEffect(() => {
     getAccess();
@@ -58,11 +43,10 @@ const Home = () => {
         throw new Error("Cannot access page");
       }
       const data = await response.json();
-      console.log(data);
       setLoggedInUserId(data.user._id);
-      setMessage(data.message);
     } catch (error) {
       console.error("Error accessing page:", error);
+      setLoggedInUserId(null);
     }
   };
 
@@ -114,79 +98,61 @@ const Home = () => {
     setDailyData(formattedDailyData);
   };
 
-  const toggleForm = () => {
-    setIsFormOpen(!isFormOpen);
+  // Calulate how many problems completed today
+  const calculateProblemsToday = (user) => {
+    const today = new Date();
+    const dataToday = filterProblemsByDate(user.problems, today);
+    return dataToday.length;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const calculateProblemsThisWeek = (user) => {
+    const dataThisWeek = filterProblemsByCurrentWeek(user.problems);
+    return dataThisWeek.length;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add new user");
-      }
-      console.log("Successfully added new user");
-      fetchUsers();
-      toggleForm();
-    } catch (error) {
-      console.error("Error adding user", error);
-    }
+  const handleView = (id) => {
+    loggedInUserId === id ? navigate(`/auth`) : navigate(`/view-user/${id}`);
   };
 
   const displayUsers = () => {
-    if (message === "Authorized") {
+    if (!users || users.length === 0) {
+      return (
+        <tr className="table-row">
+          <td>No users</td>
+        </tr>
+      );
     }
-    if (users.length > 0) {
-      return message !== "Authorized"
-        ? users
-            // Sort users based on how many total problems added
-            .sort(
-              (user_a, user_b) =>
-                user_b.problems.length - user_a.problems.length
-            )
-            .map((user, index) => (
-              <User key={index} user={user} rank={index + 1} />
-            ))
-        : users
-            .filter((user) => user._id != loggedInUserId)
-            .sort(
-              (user_a, user_b) =>
-                user_b.problems.length - user_a.problems.length
-            )
-            .map((user, index) => (
-              <User key={index} user={user} rank={index + 1} />
-            ));
-    }
+    return users
+      .sort((user_a, user_b) => user_b.problems.length - user_a.problems.length)
+      .map((user, index) => {
+        return (
+          <tr
+            className={index <= 2 ? RANKINGS[index] : "default"}
+            key={index}
+            onClick={() => handleView(user._id)}
+          >
+            <td>{index + 1}</td>
+            <td>
+              <div className="user-details">
+                <img
+                  src={user.avatar || defaultAvatar}
+                  alt={`${user.name}'s avatar`}
+                  className="user-avatar"
+                />
+                <div>
+                  <h1 className="user-name">
+                    {user.firstname} {user.lastname}
+                  </h1>
+                </div>
+              </div>
+            </td>
+            <td>{calculateProblemsToday(user)}</td>
+            <td>{calculateProblemsThisWeek(user)}</td>
+            <td>{user.problems.length}</td>
+          </tr>
+        );
+      });
   };
-
-  // const updateWeeklyRankings = () => {
-
-  // }
-
-  // Mock daily data with individual user data
-  // const dailyData = [
-  //   { date: "Nov 15", Alice: 5, Bob: 7, Kyle: 4 },
-  //   { date: "Nov 16", Alice: 8, Bob: 6, Kyle: 5 },
-  //   { date: "Nov 17", Alice: 7, Bob: 5, Kyle: 6 },
-  //   { date: "Nov 18", Alice: 6, Bob: 8, Kyle: 7 },
-  //   { date: "Nov 19", Alice: 5, Bob: 9, Kyle: 8 },
-  //   { date: "Nov 20", Alice: 10, Bob: 7, Kyle: 6 },
-  //   { date: "Nov 21", Alice: 9, Bob: 6, Kyle: 5 },
-  // ];
-
-  console.log(dailyData); // Debugging: Ensure dailyData is populated correctly
 
   if (users.length === 0) {
     return <p>Loading...</p>; // Show loading message while data is fetched
@@ -194,53 +160,6 @@ const Home = () => {
 
   return (
     <div className="main-container">
-      {isFormOpen && (
-        <div className="popup-overlay">
-          <div className="popup-form">
-            <button onClick={toggleForm} className="close-btn">
-              &times;
-            </button>
-            <h2>Create User</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="name">Name:</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="daily_goal">Daily Goal:</label>
-                <input
-                  type="number"
-                  id="daily_goal"
-                  name="daily_goal"
-                  value={formData.daily_goal || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="weekly_goal">Weekly Goal:</label>
-                <input
-                  type="number"
-                  id="weekly_goal"
-                  name="weekly_goal"
-                  value={formData.weekly_goal || ""}
-                  onChange={handleChange}
-                />
-              </div>
-              <button type="submit" className="submit-btn">
-                Submit
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
       <div>Problem Trend</div>
       <div style={{ width: "100%", height: "300px" }}>
         <ResponsiveContainer>
@@ -261,8 +180,19 @@ const Home = () => {
         </ResponsiveContainer>
       </div>
       <div className="users-container">
-        <h1>User Rankings</h1>
-        <div>{displayUsers()}</div>
+        <h1>Leaderboard</h1>
+        <table className="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>User</th>
+              <th>Today</th>
+              <th>This Week</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>{displayUsers()}</tbody>
+        </table>
       </div>
     </div>
   );
