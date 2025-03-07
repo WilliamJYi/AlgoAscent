@@ -4,6 +4,7 @@ import {
   filterProblemsByDate,
   filterProblemsByCurrentWeek,
 } from "../utils/dateUtils";
+import defaultAvatar from "../assets/default-avatar.jpg";
 import "./ViewUser.css";
 
 const ViewUser = () => {
@@ -25,7 +26,6 @@ const ViewUser = () => {
       })
       .then((data) => {
         setUserData(data);
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -34,11 +34,62 @@ const ViewUser = () => {
 
   const displayProblems = (problems) => {
     if (!problems || problems.length === 0) {
-      return <p>No problems added yet.</p>;
+      return (
+        <tr>
+          <td colSpan="5">No problems added yet</td>
+        </tr>
+      );
     }
 
-    return (
-      <div className="problem-list">
+    return problems.map((problem, index) => (
+      <tr key={index}>
+        <td>
+          {problem.name}{" "}
+          <a
+            href={problem.question_link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            🔗
+          </a>
+        </td>
+        <td>{problem.pattern}</td>
+        <td>{problem.difficulty}</td>
+        <td>{problem.completed}</td>
+        <td>{new Date(problem.date_added).toLocaleDateString()}</td>
+      </tr>
+    ));
+  };
+
+  if (!userData) {
+    return <p>Loading user data...</p>; // Show loading message while data is fetched
+  }
+
+  return (
+    <div className="public-dashboard-container">
+      <div className="heading-container">
+        <div className="user-name-avatar-container">
+          <label htmlFor="avatar-upload" className="avatar-upload-label">
+            <img
+              src={userData.avatar || defaultAvatar}
+              alt={`${userData.firstname}'s avatar`}
+              className="user-avatar"
+            />
+          </label>
+          <h1 className="user-name-container">
+            {userData.firstname} {userData.lastname}
+          </h1>
+        </div>
+        <div className="user-info-container">
+          <p className="user-problems-completed">
+            Problems: {userData.problems.length}
+          </p>
+          <p className="user-joined">
+            Joined: {new Date(userData.date_joined).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+      <div className="problems-container">
         <table className="problem-table">
           <thead>
             <tr>
@@ -50,75 +101,29 @@ const ViewUser = () => {
             </tr>
           </thead>
           <tbody>
-            {problems.map((problem, index) => (
-              <tr key={index}>
-                <td>
-                  {problem.name}{" "}
-                  <a
-                    href={problem.question_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    🔗
-                  </a>
-                </td>
-                <td>{problem.pattern}</td>
-                <td>{problem.difficulty}</td>
-                <td>{problem.completed}</td>
-                <td>{new Date(problem.date_added).toLocaleDateString()}</td>
-              </tr>
-            ))}
+            <tr className="table-title">
+              <td colSpan="5">
+                <strong>Today's Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(
+              filterProblemsByDate(userData.problems, new Date())
+            )}
+            <tr className="table-title">
+              <td colSpan="6">
+                <strong>This Week's Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(filterProblemsByCurrentWeek(userData.problems))}
+            <tr className="table-title">
+              <td colSpan="6">
+                <strong>All Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(userData.problems)}
           </tbody>
         </table>
       </div>
-    );
-  };
-
-  const displayToday = () => {
-    // if (!userData.problems) {
-    //   return <p>No problems added yet.</p>;
-    // }
-    const today = new Date();
-    const dataToday = filterProblemsByDate(userData.problems, today);
-    console.log(dataToday);
-    return displayProblems(dataToday);
-  };
-
-  const displayThisWeek = () => {
-    // if (!userData.problems) {
-    //   return <p>No problems added yet.</p>;
-    // }
-
-    const dataThisWeek = filterProblemsByCurrentWeek(userData.problems);
-
-    return displayProblems(dataThisWeek);
-  };
-
-  const displayAll = () => {
-    return !userData.problems ? (
-      <p>No problems added yet.</p>
-    ) : (
-      displayProblems(userData.problems)
-    );
-  };
-
-  if (!userData) {
-    return <p>Loading user data...</p>; // Show loading message while data is fetched
-  }
-
-  return (
-    <div>
-      <h1>{userData.firstname}'s Problems</h1>
-      <div>
-        <h3>Today's problems:</h3>
-        <div>{displayToday()}</div>
-      </div>
-      <div>
-        <h3>This week's problems:</h3>
-        <div>{displayThisWeek()}</div>
-      </div>
-      <h3>All problems:</h3>
-      <div>{displayAll()}</div>
     </div>
   );
 };

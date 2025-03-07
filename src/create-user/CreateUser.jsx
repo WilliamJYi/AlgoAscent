@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./CreateUser.css";
+import Cookies from "universal-cookie";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const CreateUser = () => {
   });
 
   const navigate = useNavigate();
+  const cookies = new Cookies();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +31,40 @@ const CreateUser = () => {
       if (!response.ok) {
         throw new Error("Failed to register");
       }
+
       console.log("Successfully registered");
+
+      // Automatically log in the user
+      const loginResponse = await fetch(`/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error("Login failed");
+      }
+
+      const loginData = await loginResponse.json();
+      console.log("Successfully logged in");
+
+      // Store token in cookies
+      cookies.set("TOKEN", loginData.token, {
+        path: "/",
+        sameSite: "None",
+        secure: true,
+      });
+
+      // Navigate to the home page
       navigate("/");
     } catch (error) {
       console.error("Error registering", error);
+      alert("Error: " + error.message);
     }
     alert("Submitted");
   };

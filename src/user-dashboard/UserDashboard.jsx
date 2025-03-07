@@ -5,6 +5,7 @@ import {
   filterProblemsByCurrentWeek,
 } from "../utils/dateUtils";
 import { DIFFICULTIES, PATTERNS, SOLVED } from "../utils/consts";
+import defaultAvatar from "../assets/default-avatar.jpg";
 import "./UserDashboard.css";
 
 const AuthComponent = () => {
@@ -56,6 +57,42 @@ const AuthComponent = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  /* Update information */
+
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Convert image to Base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      const base64Image = reader.result;
+
+      try {
+        const response = await fetch(`/api/users/${userData._id}/avatar`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ avatar: base64Image }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to upload avatar");
+        }
+
+        const data = await response.json();
+        setUserData((prev) => ({
+          ...prev,
+          avatar: data.avatar, // Update UI with new avatar
+        }));
+      } catch (error) {
+        console.error("Error uploading avatar:", error);
+      }
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -118,13 +155,88 @@ const AuthComponent = () => {
     }
   };
 
+  /* Display Data */
+
   const displayProblems = (problems) => {
     if (!problems || problems.length === 0) {
-      return <p>No problems added yet.</p>;
+      return (
+        <tr>
+          <td colSpan="6">No problems added yet.</td>
+        </tr>
+      );
     }
 
-    return (
-      <div className="problem-list">
+    return problems.map((problem, index) => (
+      <tr key={index}>
+        <td>
+          {problem.name}{" "}
+          <a
+            href={problem.question_link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            🔗
+          </a>
+        </td>
+        <td>{problem.pattern}</td>
+        <td>{problem.difficulty}</td>
+        <td>{problem.completed}</td>
+        <td>{new Date(problem.date_added).toLocaleDateString()}</td>
+        <td>
+          <button
+            onClick={() => handleDeleteProblem(problem._id)}
+            className="delete-btn"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    ));
+  };
+
+  if (!userData) {
+    return <p>Loading user data...</p>; // Show loading message while data is fetched
+  }
+
+  return (
+    <div className="personal-dashboard-container">
+      <div className="heading-container">
+        <div className="user-name-avatar-container">
+          <label htmlFor="avatar-upload" className="avatar-upload-label">
+            <img
+              src={userData?.avatar || defaultAvatar}
+              alt={`${userData.firstname}'s avatar`}
+              className="user-avatar"
+            />
+          </label>
+          <input
+            type="file"
+            id="avatar-upload"
+            accept="image/*"
+            onChange={handleAvatarUpload}
+            className="hidden-file-input"
+          />
+          <h1 className="user-name-container">
+            {userData.firstname} {userData.lastname}
+          </h1>
+        </div>
+        <div className="user-info-container">
+          <p className="user-problems-completed">
+            Total Problems: {userData.problems.length}
+          </p>
+          <p className="user-joined">
+            Joined: {new Date(userData.date_joined).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+      <div className="problems-container">
+        <div className="problems-header">
+          <div className="problems-title">Your Problems:</div>
+          <button className="open-popup-btn" onClick={togglePopup}>
+            Add Problem
+          </button>
+        </div>
+
         <table className="problem-table">
           <thead>
             <tr>
@@ -137,88 +249,32 @@ const AuthComponent = () => {
             </tr>
           </thead>
           <tbody>
-            {problems.map((problem, index) => (
-              <tr key={index}>
-                <td>
-                  {problem.name}{" "}
-                  <a
-                    href={problem.question_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    🔗
-                  </a>
-                </td>
-                <td>{problem.pattern}</td>
-                <td>{problem.difficulty}</td>
-                <td>{problem.completed}</td>
-                <td>{new Date(problem.date_added).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    onClick={() => handleDeleteProblem(problem._id)}
-                    className="delete-btn"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {/* Section for Today's Problems */}
+            <tr className="table-title">
+              <td colSpan="6">
+                <strong>Today's Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(
+              filterProblemsByDate(userData.problems, new Date())
+            )}
+            {/* Section for This Week's Problems */}
+            <tr className="table-title">
+              <td colSpan="6">
+                <strong>This Week's Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(filterProblemsByCurrentWeek(userData.problems))}
+
+            {/* Section for All Problems */}
+            <tr className="table-title">
+              <td colSpan="6">
+                <strong>All Problems</strong>
+              </td>
+            </tr>
+            {displayProblems(userData.problems)}
           </tbody>
         </table>
-      </div>
-    );
-  };
-
-  const displayToday = () => {
-    const today = new Date();
-    const dataToday = filterProblemsByDate(userData.problems, today);
-    console.log(dataToday);
-    return displayProblems(dataToday);
-  };
-
-  const displayThisWeek = () => {
-    const dataThisWeek = filterProblemsByCurrentWeek(userData.problems);
-
-    return displayProblems(dataThisWeek);
-  };
-
-  const displayAll = () => {
-    return !userData.problems ? (
-      <p>No problems added yet.</p>
-    ) : (
-      displayProblems(userData.problems)
-    );
-  };
-
-  if (!userData) {
-    return <p>Loading user data...</p>; // Show loading message while data is fetched
-  }
-
-  return (
-    <div className="dashboard-container">
-      <div className="heading-container">
-        <img
-          src={userData.avatar}
-          alt={`${userData.name}'s avatar`}
-          className="user-avatar"
-        />
-        <h1>Welcome {userData.firstname}!</h1>
-      </div>
-      <div className="problems-container">
-        <h1>Problems Completed</h1>
-        <div>
-          <h3>Today's problems:</h3>
-          <div>{displayToday()}</div>
-          <button className="open-popup-btn" onClick={togglePopup}>
-            Add Problem
-          </button>
-        </div>
-        <div>
-          <h3>This week's problems:</h3>
-          <div>{displayThisWeek()}</div>
-        </div>
-        <h3>All problems:</h3>
-        <div>{displayAll()}</div>
         {isOpen && (
           <div className="popup-overlay">
             <div className="popup-form">
