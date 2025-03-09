@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/UserModel");
 const auth = require("../auth/Auth");
+const sendVerificationEmail = require("../utils/emailService");
 
 const router = express.Router();
 
@@ -31,11 +32,48 @@ router.post("/register", async (request, response) => {
 
     await user.save();
 
-    response.status(201).json({ message: "User Created Successfully", user });
+    // Generate verification token
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "24h ",
+    });
+
+    await sendVerificationEmail(user.email, token);
+
+    response.status(201).json({
+      message:
+        "User registration successfull! Check your email to verify your account.",
+      user,
+    });
   } catch (error) {
     response
       .status(500)
       .json({ message: "Password was not hashed successfully", error });
+  }
+});
+
+router.get("/verify-email/:token", async (request, response) => {
+  try {
+    const { token } = request.params;
+
+    // Verify token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user by email
+    const user = await User.findOne({ email: decodedToken.email });
+
+    if (!user) {
+      return response
+        .status(400)
+        .json({ message: "Invalid verification link" });
+    }
+
+    // Mark user as verified
+    user.verified = true;
+    await user.save();
+
+    response.json({ message: "Email verified successfully!" });
+  } catch (error) {
+    response.status(400).json({ message: "Invalid or expired token" });
   }
 });
 
@@ -47,6 +85,13 @@ router.post("/login", async (request, response) => {
     const user = await User.findOne({ email });
     if (!user) {
       return response.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user has verified their email
+    if (!user.verified) {
+      return response
+        .status(401)
+        .json({ message: "Please verify your email before logging in" });
     }
 
     // Validate password
@@ -61,9 +106,10 @@ router.post("/login", async (request, response) => {
         userId: user._id,
         email: user.email,
       },
-      "RANDOM-TOKEN",
+      process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
+
     response.status(200).json({
       message: "Login Successful",
       email: user.email,
