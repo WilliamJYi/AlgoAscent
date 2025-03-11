@@ -31,20 +31,17 @@
   border-radius: 4px;
 }
 
-/* Style for the password input container */
 .password-container {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-/* Ensure input takes full width */
 .password-container input {
   width: 100%;
-  padding-right: 50px; /* Space for the toggle button */
+  padding-right: 50px;
 }
 
-/* Toggle Button for Show/Hide Password */
 .toggle-password {
   position: absolute;
   right: 10px;

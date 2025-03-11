@@ -67,19 +67,18 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #6366f1; /* Indigo */
+  border: 4px solid #6366f1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f3f4f6; /* Gray-100 as fallback background */
-  color: #6b7280; /* Gray-500 for alt text */
+  background-color: #f3f4f6;
+  color: #6b7280;
   font-size: 0.875rem;
   font-weight: bold;
   text-align: center;
 }
 
 /* Table Row Styling */
-
 .leaderboard-table td {
   background-color: #575664;
   padding: 0 20px;
@@ -102,18 +101,17 @@
 }
 
 .first-place td {
-  background: linear-gradient(to right, #ffd700, #ffbf00); /* Gold gradient */
+  background: linear-gradient(to right, #ffd700, #ffbf00);
 }
 
 .second-place td {
-  background: linear-gradient(to right, #c0c0c0, #a9a9a9); /* Silver gradient */
+  background: linear-gradient(to right, #c0c0c0, #a9a9a9);
 }
 
 .third-place td {
-  background: linear-gradient(to right, #cd7f32, #b87333); /* Bronze gradient */
+  background: linear-gradient(to right, #cd7f32, #b87333);
 }
 
-/* Hover effect */
 .leaderboard-table tr:hover td {
   background-color: #555 !important;
   cursor: pointer;

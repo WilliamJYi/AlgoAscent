@@ -64,7 +64,7 @@ const UserDashboard = () => {
         const data = await response.json();
         setUserData((prev) => ({
           ...prev,
-          avatar: data.avatar, // Update UI with new avatar
+          avatar: data.avatar,
         }));
       } catch (error) {
         console.error("Error uploading avatar:", error);
@@ -74,21 +74,12 @@ const UserDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Reset form and close popup
-    setFormData({
-      name: "",
-      pattern: "",
-      difficulty: "",
-      completed: "",
-      question_link: "",
-    });
-
-    const problemToAdd = {
-      ...formData,
-      date_added: new Date().toISOString(),
-    };
-
     try {
+      const problemToAdd = {
+        ...formData,
+        date_added: new Date().toISOString(),
+      };
+
       const response = await fetch(`/api/users/${id}`, {
         method: "PUT",
         headers: {
@@ -101,6 +92,13 @@ const UserDashboard = () => {
         throw new Error("Failed to add an problem");
       }
       console.log("Problem added successfully");
+      setFormData({
+        name: "",
+        pattern: "",
+        difficulty: "",
+        completed: "",
+        question_link: "",
+      });
       setUserData((prev) => ({
         ...prev,
         problems: [...prev.problems, problemToAdd],
@@ -150,7 +148,6 @@ const UserDashboard = () => {
   };
 
   /* Display Data */
-
   const displayProblems = (problems) => {
     if (!problems || problems.length === 0) {
       return (
@@ -346,7 +343,7 @@ const UserDashboard = () => {
                 <div className="form-group">
                   <label htmlFor="question_link">Question Link</label>
                   <input
-                    type="url" /* Changed type to 'url' for validation */
+                    type="url"
                     id="question_link"
                     name="question_link"
                     value={formData.question_link || ""}

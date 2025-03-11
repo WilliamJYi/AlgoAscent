@@ -9,12 +9,12 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false); // Password visibility state
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const { token, setToken, useData, setUserData } = useContext(AuthContext);
+  const { setToken } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +32,6 @@ const Login = () => {
       }
 
       const data = await response.json();
-      console.log(data);
 
       if (!data.verified) {
         setMessage("Please verify your email before logging in.");
@@ -46,8 +45,6 @@ const Login = () => {
       });
 
       setToken(data.token);
-
-      // alert("Login Successful");
       setFormData({ email: "", password: "" });
       navigate("/");
     } catch (error) {
@@ -82,7 +79,7 @@ const Login = () => {
             <label htmlFor="password">Password</label>
             <div className="password-container">
               <input
-                type={showPassword ? "text" : "password"} // Toggle visibility
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
                 value={formData.password || ""}

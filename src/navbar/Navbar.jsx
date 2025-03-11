@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import "./Navbar.css";
@@ -10,39 +10,6 @@ const Navbar = () => {
   const { token, setToken, userData, setUserData } = useContext(AuthContext);
 
   useEffect(() => {}, [token]);
-
-  // // Function to check authentication status
-  // const checkAuthStatus = async (userToken) => {
-  //   if (!userToken) return;
-
-  //   try {
-  //     const response = await fetch("/api/auth/auth-endpoint", {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: `Bearer ${userToken}`,
-  //       },
-  //     });
-  //     if (!response.ok) {
-  //       throw new Error("Cannot access page");
-  //     }
-  //     const data = await response.json();
-  //     setUserData(data.user);
-  //     setToken(userToken || null);
-  //   } catch (error) {
-  //     console.error("Error accessing page:", error);
-  //     setUserData(null);
-  //     setToken(null);
-  //     cookies.remove("TOKEN", { path: "/" });
-  //   }
-  // };
-
-  // // Check authentication status if token exists
-  // useEffect(() => {
-  //   console.log(token);
-  //   if (token) {
-  //     checkAuthStatus(token);
-  //   }
-  // }, [token]);
 
   // Logout function
   const handleLogout = () => {
