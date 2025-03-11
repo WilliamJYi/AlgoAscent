@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/verify-email/:token",
+      "destination": "/index.html"
+    }
+  ]
+}
