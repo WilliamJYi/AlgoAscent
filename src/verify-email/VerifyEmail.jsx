@@ -8,9 +8,12 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await fetch(`/api/auth/verify-email/${token}`, {
-          method: "GET",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/verify-email/${token}`,
+          {
+            method: "GET",
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Email verification failed.");

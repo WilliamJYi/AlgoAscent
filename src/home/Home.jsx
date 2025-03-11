@@ -39,7 +39,8 @@ const Home = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/users");
+      console.log(import.meta.env.VITE_BACKEND_URL);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users`);
       if (!response.ok) {
         throw new Error("Failed to fetch users");
       }

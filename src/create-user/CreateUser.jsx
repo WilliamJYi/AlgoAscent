@@ -24,15 +24,18 @@ const CreateUser = () => {
 
     try {
       const { confirm_password, ...dataToSubmit } = formData;
-      const response = await fetch(`/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...dataToSubmit,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...dataToSubmit,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to register");
