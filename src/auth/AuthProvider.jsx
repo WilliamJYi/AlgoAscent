@@ -12,12 +12,15 @@ const AuthProvider = ({ children }) => {
     if (!userToken) return;
 
     try {
-      const response = await fetch("/api/auth/auth-endpoint", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/auth-endpoint`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Cannot access page");

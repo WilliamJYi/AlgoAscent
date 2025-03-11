@@ -17,7 +17,7 @@ const ViewUser = () => {
   }, [id]);
 
   const fetchUser = () => {
-    fetch(`/api/users/${id}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to fetch user");

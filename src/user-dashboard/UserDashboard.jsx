@@ -49,13 +49,16 @@ const UserDashboard = () => {
       const base64Image = reader.result;
 
       try {
-        const response = await fetch(`/api/users/${id}/avatar`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ avatar: base64Image }),
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/users/${id}/avatar`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ avatar: base64Image }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to upload avatar");
@@ -80,13 +83,16 @@ const UserDashboard = () => {
         date_added: new Date().toISOString(),
       };
 
-      const response = await fetch(`/api/users/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(problemToAdd),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/users/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(problemToAdd),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to add an problem");
@@ -111,9 +117,12 @@ const UserDashboard = () => {
 
   const handleDeleteProblem = async (problemId) => {
     try {
-      const response = await fetch(`/api/users/${id}/problems/${problemId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/users/${id}/problems/${problemId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         // Update the state after deletion
@@ -129,9 +138,12 @@ const UserDashboard = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await fetch(`/api/users/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/users/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to delete account");
