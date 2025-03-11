@@ -14,7 +14,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Middleware
-app.use(cors({ origin: "https://algoascent.vercel.app/", credentials: true }));
+app.use(cors({ origin: "https://algoascent.vercel.app", credentials: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 
