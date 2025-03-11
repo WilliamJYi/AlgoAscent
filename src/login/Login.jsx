@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import "./Login.css";
+import AuthContext from "../auth/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,13 +10,14 @@ const Login = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false); // Password visibility state
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
   const cookies = new Cookies();
+  const { token, setToken, useData, setUserData } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormData({ email: "", password: "" });
     try {
       const response = await fetch(`/api/auth/login`, {
         method: "POST",
@@ -28,17 +30,29 @@ const Login = () => {
       if (!response.ok) {
         throw new Error("Failed to login");
       }
-      console.log("Successfully logged in");
+
       const data = await response.json();
+      console.log(data);
+
+      if (!data.verified) {
+        setMessage("Please verify your email before logging in.");
+        return;
+      }
+
       cookies.set("TOKEN", data.token, {
         path: "/",
         sameSite: "None",
         secure: true,
       });
-      alert("Login Successful");
+
+      setToken(data.token);
+
+      // alert("Login Successful");
+      setFormData({ email: "", password: "" });
       navigate("/");
     } catch (error) {
       console.error("Error logging in", error);
+      setMessage("Login failed. Please try again.");
     }
   };
 
@@ -51,6 +65,7 @@ const Login = () => {
     <div className="container">
       <h1>Login page</h1>
       <div className="login-container">
+        {message && <p>{message}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
@@ -58,7 +73,7 @@ const Login = () => {
               type="text"
               id="email"
               name="email"
-              value={formData.email}
+              value={formData.email || ""}
               onChange={handleChange}
               required
             />
@@ -70,7 +85,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"} // Toggle visibility
                 id="password"
                 name="password"
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={handleChange}
                 required
               />
@@ -83,7 +98,7 @@ const Login = () => {
               </button>
             </div>
           </div>
-          <button>Login</button>
+          <button className="submit-btn">Login</button>
           <p className="signup-text">
             Don't have an account? <Link to="/create-user">Sign up</Link>
           </p>

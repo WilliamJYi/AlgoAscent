@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import {
   filterProblemsByDate,
@@ -7,12 +8,14 @@ import {
 import { DIFFICULTIES, PATTERNS, SOLVED } from "../utils/consts";
 import defaultAvatar from "../assets/default-avatar.jpg";
 import "./UserDashboard.css";
+import AuthContext from "../auth/AuthContext";
 
-const AuthComponent = () => {
+const UserDashboard = () => {
   const cookies = new Cookies();
-  const token = cookies.get("TOKEN");
+  const navigate = useNavigate();
+  const { setToken, userData, setUserData } = useContext(AuthContext);
+  const id = userData._id;
 
-  const [userData, setUserData] = useState();
   const [formData, setFormData] = useState({
     name: "",
     difficulty: "",
@@ -21,31 +24,6 @@ const AuthComponent = () => {
     question_link: "",
   });
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    getAccess();
-  }, []);
-
-  const getAccess = async () => {
-    try {
-      const response = await fetch("/api/auth/auth-endpoint", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Cannot access page");
-      }
-      const data = await response.json();
-      console.log(data);
-      setUserData(data.user);
-      setMessage(data.message);
-    } catch (error) {
-      console.error("Error accessing page:", error);
-    }
-  };
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
@@ -60,7 +38,6 @@ const AuthComponent = () => {
   };
 
   /* Update information */
-
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -72,7 +49,7 @@ const AuthComponent = () => {
       const base64Image = reader.result;
 
       try {
-        const response = await fetch(`/api/users/${userData._id}/avatar`, {
+        const response = await fetch(`/api/users/${id}/avatar`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -112,7 +89,7 @@ const AuthComponent = () => {
     };
 
     try {
-      const response = await fetch(`/api/users/${userData._id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -136,12 +113,9 @@ const AuthComponent = () => {
 
   const handleDeleteProblem = async (problemId) => {
     try {
-      const response = await fetch(
-        `/api/users/${userData._id}/problems/${problemId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/users/${id}/problems/${problemId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         // Update the state after deletion
@@ -150,6 +124,26 @@ const AuthComponent = () => {
       } else {
         console.error("Failed to delete problem");
       }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      console.log("Successfully deleted account");
+      cookies.remove("TOKEN", { path: "/" });
+      setToken(null);
+      setUserData(null);
+      navigate("/");
     } catch (error) {
       console.error("Error:", error);
     }
@@ -166,8 +160,8 @@ const AuthComponent = () => {
       );
     }
 
-    return problems.map((problem, index) => (
-      <tr key={index}>
+    return problems.map((problem) => (
+      <tr key={problem._id}>
         <td>
           {problem.name}{" "}
           <a
@@ -221,6 +215,9 @@ const AuthComponent = () => {
           </h1>
         </div>
         <div className="user-info-container">
+          <button className="delete-account" onClick={handleDeleteAccount}>
+            Delete Account
+          </button>
           <p className="user-problems-completed">
             Total Problems: {userData.problems.length}
           </p>
@@ -369,4 +366,4 @@ const AuthComponent = () => {
   );
 };
 
-export default AuthComponent;
+export default UserDashboard;

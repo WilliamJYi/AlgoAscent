@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide a Password!"],
     unique: false,
   },
+  verified: { type: Boolean, default: "false" },
   problems: [problemSchema],
   avatar: { type: String, default: "" },
   daily_goal: { type: Number, default: 15 },

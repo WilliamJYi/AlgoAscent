@@ -1,45 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import "./Navbar.css";
+import AuthContext from "../auth/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const cookies = new Cookies();
-  const [token, setToken] = useState(cookies.get("TOKEN") || null);
-  const [userData, setUserData] = useState();
+  const { token, setToken, userData, setUserData } = useContext(AuthContext);
 
-  // Function to check authentication status
-  const checkAuthStatus = async (userToken) => {
-    if (!userToken) return;
+  useEffect(() => {}, [token]);
 
-    try {
-      const response = await fetch("/api/auth/auth-endpoint", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Cannot access page");
-      }
-      const data = await response.json();
-      setUserData(data.user);
-      setToken(userToken || null);
-    } catch (error) {
-      console.error("Error accessing page:", error);
-      setUserData(null);
-      setToken(null);
-      cookies.remove("TOKEN", { path: "/" });
-    }
-  };
+  // // Function to check authentication status
+  // const checkAuthStatus = async (userToken) => {
+  //   if (!userToken) return;
 
-  // Check authentication status if token exists
-  useEffect(() => {
-    if (token) {
-      checkAuthStatus(token);
-    }
-  }, [token]);
+  //   try {
+  //     const response = await fetch("/api/auth/auth-endpoint", {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${userToken}`,
+  //       },
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Cannot access page");
+  //     }
+  //     const data = await response.json();
+  //     setUserData(data.user);
+  //     setToken(userToken || null);
+  //   } catch (error) {
+  //     console.error("Error accessing page:", error);
+  //     setUserData(null);
+  //     setToken(null);
+  //     cookies.remove("TOKEN", { path: "/" });
+  //   }
+  // };
+
+  // // Check authentication status if token exists
+  // useEffect(() => {
+  //   console.log(token);
+  //   if (token) {
+  //     checkAuthStatus(token);
+  //   }
+  // }, [token]);
 
   // Logout function
   const handleLogout = () => {
