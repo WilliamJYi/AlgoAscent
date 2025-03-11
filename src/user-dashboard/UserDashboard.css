@@ -27,22 +27,20 @@
   align-items: center;
   justify-content: center;
   margin-top: 40px;
-  cursor: pointer; /* Makes avatar clickable */
+  cursor: pointer;
   transition: opacity 0.3s ease;
 }
 
 .personal-dashboard-container .user-avatar:hover {
-  opacity: 0.7; /* Adds slight effect on hover */
+  opacity: 0.7;
   transform: translateY(-5px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Hide the file input */
 .hidden-file-input {
   display: none;
 }
 
-/* Style the label to ensure it's clickable */
 .avatar-upload-label {
   display: inline-block;
   cursor: pointer;
@@ -57,7 +55,7 @@
 }
 
 .user-info-container {
-  position: relative; /* Ensures child elements are positioned correctly */
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: flex-end;
@@ -70,14 +68,14 @@
   top: 15px;
   right: 10px;
   font-size: 14px;
-  color: #666; /* Optional: Adjust color */
+  color: #666;
 }
 .user-info-container .user-problems-completed {
   position: absolute;
   top: 40px;
   right: 10px;
   font-size: 14px;
-  color: #666; /* Optional: Adjust color */
+  color: #666;
 }
 
 .delete-account {
@@ -139,7 +137,6 @@
 }
 
 /* Table styles */
-
 .personal-dashboard-container .problem-table {
   width: 100%;
   border-collapse: collapse;

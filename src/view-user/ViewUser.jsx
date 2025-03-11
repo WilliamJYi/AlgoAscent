@@ -8,8 +8,8 @@ import defaultAvatar from "../assets/default-avatar.jpg";
 import "./ViewUser.css";
 
 const ViewUser = () => {
-  const { id } = useParams(); // Get the user ID from the route
-  const [userData, setUserData] = useState(null); // State to hold user data
+  const { id } = useParams();
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     // Fetch user data by ID when component mounts

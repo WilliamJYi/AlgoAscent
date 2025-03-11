@@ -24,7 +24,6 @@ const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log(data);
       setUserData(data.user);
       setToken(userToken || null);
     } catch (error) {

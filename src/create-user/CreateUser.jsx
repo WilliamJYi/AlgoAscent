@@ -11,7 +11,7 @@ const CreateUser = () => {
     confirm_password: "",
   });
   const [showPassword, setShowPassword] = useState(false); // Password visibility state
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Password visibility state
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Confirm Password visibility state
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -53,7 +53,6 @@ const CreateUser = () => {
       console.error("Error registering", error);
       alert("Error: " + error.message);
     }
-    // alert("Submitted");
   };
 
   const handleChange = (e) => {

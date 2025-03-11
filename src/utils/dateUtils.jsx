@@ -21,11 +21,11 @@ export const getCurrentWeekRange = () => {
 export const filterProblemsByDate = (problems = [], date) => {
   if (!problems || !Array.isArray(problems)) {
     console.error("Problems is undefined or not an array:", problems);
-    return []; // Return an empty array to prevent errors
+    return [];
   }
 
   return problems.filter((app) => {
-    if (!app.date_added) return false; // Ensure date exists
+    if (!app.date_added) return false;
     const appDate = new Date(app.date_added).toLocaleDateString();
     return appDate === date.toLocaleDateString();
   });
