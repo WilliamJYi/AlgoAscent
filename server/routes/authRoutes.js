@@ -28,13 +28,14 @@ router.post("/register", async (request, response) => {
       lastname,
       email,
       password: hashedPassword,
+      verified: false,
     });
 
     await user.save();
 
     // Generate verification token
     const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "24h ",
+      expiresIn: "24h",
     });
 
     await sendVerificationEmail(user.email, token);
@@ -45,9 +46,11 @@ router.post("/register", async (request, response) => {
       user,
     });
   } catch (error) {
-    response
-      .status(500)
-      .json({ message: "Password was not hashed successfully", error });
+    console.error("Error in /register:", error); // Log error
+    response.status(500).json({
+      message: "Password was not hashed successfully",
+      error: error.message,
+    });
   }
 });
 
@@ -113,6 +116,7 @@ router.post("/login", async (request, response) => {
     response.status(200).json({
       message: "Login Successful",
       email: user.email,
+      verified: true,
       token,
     });
   } catch (error) {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./CreateUser.css";
-import Cookies from "universal-cookie";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -9,22 +8,29 @@ const CreateUser = () => {
     lastname: "",
     email: "",
     password: "",
+    confirm_password: "",
   });
-
-  const navigate = useNavigate();
-  const cookies = new Cookies();
+  const [showPassword, setShowPassword] = useState(false); // Password visibility state
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Password visibility state
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormData({ firstname: "", lastname: "", email: "", password: "" });
+
+    if (formData.password !== formData.confirm_password) {
+      setMessage("Passwords do not match!");
+      return;
+    }
+
     try {
+      const { confirm_password, ...dataToSubmit } = formData;
       const response = await fetch(`/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
+          ...dataToSubmit,
         }),
       });
 
@@ -32,41 +38,22 @@ const CreateUser = () => {
         throw new Error("Failed to register");
       }
 
-      console.log("Successfully registered");
-
-      // Automatically log in the user
-      const loginResponse = await fetch(`/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      console.log("Successfully registered!");
+      setFormData({
+        firstname: "",
+        lastname: "",
+        email: "",
+        password: "",
+        confirm_password: "",
       });
-
-      if (!loginResponse.ok) {
-        throw new Error("Login failed");
-      }
-
-      const loginData = await loginResponse.json();
-      console.log("Successfully logged in");
-
-      // Store token in cookies
-      cookies.set("TOKEN", loginData.token, {
-        path: "/",
-        sameSite: "None",
-        secure: true,
-      });
-
-      // Navigate to the home page
-      navigate("/");
+      setMessage(
+        "Verification email sent. Please check your inbox and verify your account."
+      );
     } catch (error) {
       console.error("Error registering", error);
       alert("Error: " + error.message);
     }
-    alert("Submitted");
+    // alert("Submitted");
   };
 
   const handleChange = (e) => {
@@ -77,7 +64,8 @@ const CreateUser = () => {
   return (
     <div className="container">
       <h1>Join Board</h1>
-      <div className="login-container">
+      <div className="create-user-container">
+        {message && <p>{message}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="firstname">First Name</label>
@@ -85,6 +73,7 @@ const CreateUser = () => {
               type="text"
               id="firstname"
               name="firstname"
+              value={formData.firstname || ""}
               onChange={handleChange}
               required
             ></input>
@@ -95,6 +84,7 @@ const CreateUser = () => {
               type="text"
               id="lastname"
               name="lastname"
+              value={formData.lastname || ""}
               onChange={handleChange}
               required
             ></input>
@@ -112,28 +102,46 @@ const CreateUser = () => {
           </div>
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password || ""}
-              onChange={handleChange}
-              required
-            ></input>
+            <div className="create-user-password-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={formData.password || ""}
+                onChange={handleChange}
+                required
+              ></input>
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
-          {/* <div className="form-group">
+          <div className="form-group">
             <label htmlFor="password">Confirm Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password || ""}
-              onChange={handleChange}
-              required
-            ></input>
-          </div> */}
+            <div className="create-user-password-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirm_password"
+                name="confirm_password"
+                value={formData.confirm_password || ""}
+                onChange={handleChange}
+                required
+              ></input>
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
 
-          <button>Join</button>
+          <button className="submit-btn">Submit</button>
           <p className="signup-text">
             Have an account? <Link to="/login">Log in</Link>
           </p>

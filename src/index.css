@@ -2,8 +2,9 @@
 body {
   font-family: "Inter", sans-serif; /* Default font for your app */
   line-height: 1.6; /* Improves readability */
-  color: #333; /* Default text color */
+  color: whitesmoke; /* Default text color */
   margin: 0;
   padding: 0;
-  background-color: #f9f9f9; /* Optional background color */
+  display: flex;
+  background-color: #121122;
 }

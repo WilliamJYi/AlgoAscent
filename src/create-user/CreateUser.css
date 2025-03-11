@@ -4,13 +4,12 @@
   align-items: center;
 }
 
-.login-container {
-  background: #fff;
+.create-user-container {
+  background: #272737;
   padding: 20px;
   border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: 300px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
   position: relative;
 }
 
@@ -28,6 +27,40 @@
 .form-group input {
   width: 94%; /* Change later */
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid;
+  background-color: white;
   border-radius: 4px;
+}
+
+.create-user-password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.create-user-password-container input {
+  width: 100%;
+  padding-right: 50px; /* Space for the toggle button */
+}
+
+/* Toggle Button for Show/Hide Password */
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: grey;
+}
+
+.toggle-password:hover {
+  text-decoration: underline;
+}
+
+.create-user-submit {
+  padding: 5px;
+  margin-top: 10px;
+  width: 75px;
+  font-size: 14px;
 }

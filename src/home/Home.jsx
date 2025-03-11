@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import {
@@ -17,38 +17,15 @@ import {
 import defaultAvatar from "../assets/default-avatar.jpg";
 import "./Home.css";
 import { RANKINGS } from "../utils/consts";
+import AuthContext from "../auth/AuthContext";
 
 const Home = () => {
-  const cookies = new Cookies();
-  const token = cookies.get("TOKEN");
-  const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const { userData } = useContext(AuthContext);
+  const loggedInUserId = userData ? userData._id : "";
   const [users, setUsers] = useState([]);
   const [dailyData, setDailyData] = useState([]);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getAccess();
-  }, []);
-
-  const getAccess = async () => {
-    try {
-      const response = await fetch("/api/auth/auth-endpoint", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Cannot access page");
-      }
-      const data = await response.json();
-      setLoggedInUserId(data.user._id);
-    } catch (error) {
-      console.error("Error accessing page:", error);
-      setLoggedInUserId(null);
-    }
-  };
 
   useEffect(() => {
     if (users.length > 0) {

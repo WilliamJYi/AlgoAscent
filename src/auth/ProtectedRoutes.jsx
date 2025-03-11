@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import Cookies from "universal-cookie";
-
-const cookies = new Cookies();
+import AuthContext from "./AuthContext";
 
 const ProtectedRoutes = ({ children }) => {
-  const token = cookies.get("TOKEN");
+  const { token } = useContext(AuthContext);
 
   return token ? children : <Navigate to="/" replace />;
 };
